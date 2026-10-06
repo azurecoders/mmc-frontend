@@ -374,8 +374,8 @@ export function Dialog({
 }: {
   open: boolean;
   onClose: () => void;
-  title: string;
-  description?: string;
+  title: React.ReactNode;
+  description?: React.ReactNode;
   children: React.ReactNode;
   footer?: React.ReactNode;
   size?: "sm" | "md" | "lg" | "xl";
@@ -412,7 +412,7 @@ export function Dialog({
               <h2 id={titleId} className="text-lg font-semibold text-slate-900">
                 {title}
               </h2>
-              {description && <p className="mt-0.5 text-sm text-slate-500">{description}</p>}
+              {description && <div className="mt-0.5 text-sm text-slate-500">{description}</div>}
             </div>
             <button
               type="button"
@@ -430,6 +430,8 @@ export function Dialog({
     </dialog>
   );
 }
+
+export const Modal = Dialog;
 
 /* ------------------------------------------------------- DescriptionList */
 

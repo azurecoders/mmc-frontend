@@ -114,7 +114,7 @@ export default function WaitingRoomTVPage() {
             </button>
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-                ApexCare Hospital & Medical Center
+                MMC Hospital
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 font-medium">
                 Live Patient Calling & Waiting Lounge Information

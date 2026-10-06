@@ -106,6 +106,17 @@ export const WORKSPACES: Record<RoleCode, Workspace> = {
       { href: "/lab/catalog", label: "Test catalog", icon: BookOpen },
     ],
   },
+  NURSE: {
+    role: "NURSE",
+    label: "Nursing",
+    description: "Inpatient vitals, triage, queue management and emergency response.",
+    home: "/nurse",
+    icon: HeartPulse,
+    nav: [
+      { href: "/nurse", label: "Patient Care & Vitals", icon: Activity },
+      { href: "/nurse/alerts", label: "Emergency Alerts", icon: Siren },
+    ],
+  },
   SUPER_ADMIN: {
     role: "SUPER_ADMIN",
     label: "Administration",
@@ -115,6 +126,7 @@ export const WORKSPACES: Record<RoleCode, Workspace> = {
     nav: [
       { href: "/admin", label: "Users", icon: Users },
       { href: "/admin/roles", label: "Roles & permissions", icon: KeyRound },
+      { href: "/admin/emergency-teams", label: "Emergency Teams", icon: Siren },
     ],
   },
 };
@@ -125,7 +137,7 @@ export const SHARED_NAV: NavItem[] = [
   { href: "/guide", label: "Help & guide", icon: BookOpen },
 ];
 
-export const ROLE_ORDER: RoleCode[] = ["PATIENT", "DOCTOR", "COMPOUNDER", "PHARMACIST", "LAB_ASSISTANT", "SUPER_ADMIN"];
+export const ROLE_ORDER: RoleCode[] = ["PATIENT", "DOCTOR", "NURSE", "COMPOUNDER", "PHARMACIST", "LAB_ASSISTANT", "SUPER_ADMIN"];
 
 export function userRoles(user: User | null): RoleCode[] {
   return (user?.roles?.map((r) => r.code).filter((c): c is RoleCode => c in WORKSPACES) ?? []) as RoleCode[];

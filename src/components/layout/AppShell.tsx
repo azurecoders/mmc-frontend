@@ -19,6 +19,7 @@ import { useSocketStatus } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 import { Avatar, Badge, LinkButton, LoadingState, EmptyState } from "@/components/ui";
 import { Logo } from "./Logo";
+import { EmergencyAlertBanner } from "@/components/emergency/EmergencyAlertBanner";
 
 function NavLink({ item, active, onNavigate }: { item: NavItem; active: boolean; onNavigate?: () => void }) {
   const Icon = item.icon;
@@ -82,6 +83,7 @@ function UserCard() {
 function primaryWorkspace(roles: string[]): Workspace {
   if (roles.includes("SUPER_ADMIN")) return WORKSPACES.SUPER_ADMIN;
   if (roles.includes("DOCTOR")) return WORKSPACES.DOCTOR;
+  if (roles.includes("NURSE")) return WORKSPACES.NURSE;
   if (roles.includes("COMPOUNDER")) return WORKSPACES.COMPOUNDER;
   if (roles.includes("PHARMACIST")) return WORKSPACES.PHARMACIST;
   if (roles.includes("LAB_ASSISTANT")) return WORKSPACES.LAB_ASSISTANT;
@@ -217,6 +219,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <main id="main" className="lg:pl-64">
         <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+          <EmergencyAlertBanner />
           {canAccess(user, ws) ? (
             children
           ) : (

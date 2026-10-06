@@ -2,6 +2,7 @@ export type RoleCode =
   | "SUPER_ADMIN"
   | "DOCTOR"
   | "COMPOUNDER"
+  | "NURSE"
   | "LAB_ASSISTANT"
   | "PHARMACIST"
   | "PATIENT";
@@ -519,4 +520,61 @@ export interface LabReportSimplificationResponse {
   generated_at: string;
 }
 
+// --- Emergency Code & Hospital Response System Types ---
+export interface EmergencyMemberBrief {
+  id: string;
+  email: string;
+  full_name: string;
+  phone?: string;
+  role_names: string[];
+}
 
+export interface EmergencyCodeGroupResponse {
+  id: string;
+  code: string;
+  name: string;
+  color_hex: string;
+  badge_color: string;
+  description: string;
+  call_to_action: string;
+  is_active: boolean;
+  members: EmergencyMemberBrief[];
+  member_count: number;
+}
+
+export interface EmergencyResponderResponse {
+  id: string;
+  user_id: string;
+  user_name: string;
+  status: string;
+  responded_at: string;
+  note?: string;
+}
+
+export interface EmergencyAlertResponse {
+  id: string;
+  code: string;
+  code_name: string;
+  color_hex: string;
+  ward: string;
+  location_details?: string;
+  notes?: string;
+  status: "ACTIVE" | "ACKNOWLEDGED" | "RESOLVED" | "CANCELLED";
+  triggered_at: string;
+  triggered_by_id: string;
+  triggered_by_name: string;
+  resolved_at?: string;
+  resolved_by_id?: string;
+  resolved_by_name?: string;
+  resolution_notes?: string;
+  assigned_members_count: number;
+  responders_count: number;
+  responders: EmergencyResponderResponse[];
+}
+
+export interface EmergencyTriggerPayload {
+  code: string;
+  ward: string;
+  location_details?: string;
+  notes?: string;
+}

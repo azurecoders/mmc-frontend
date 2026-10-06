@@ -45,7 +45,7 @@ export default function GuidePage() {
           System Guide & Workflows
         </h1>
         <p className="max-w-3xl text-base text-slate-600">
-          Learn how ApexCare coordinates clinical teams in real-time — from AI triage and queue
+          Learn how MMC Hospital coordinates clinical teams in real-time — from AI triage and queue
           management to digital prescriptions and laboratory results.
         </p>
       </div>
@@ -79,7 +79,7 @@ export default function GuidePage() {
               />
               <CardBody className="space-y-4 text-sm text-slate-600">
                 <p>
-                  ApexCare is built on an asynchronous event-driven architecture using Next.js 16,
+                  MMC Hospital is built on an asynchronous event-driven architecture using Next.js 16,
                   FastAPI, PostgreSQL, and Socket.IO. When any clinician takes an action — such as calling
                   a token, dispensing medicine, or publishing a lab report — all relevant interfaces
                   update instantly with under 50ms latency.

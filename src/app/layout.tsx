@@ -8,11 +8,11 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "sw
 
 export const metadata: Metadata = {
   title: {
-    default: "ApexCare — Hospital Management",
-    template: "%s · ApexCare",
+    default: "MMC Hospital — Clinical Management System",
+    template: "%s · MMC Hospital",
   },
   description:
-    "Book appointments, track your queue live, and connect patients, doctors, pharmacy and lab in one calm, simple system.",
+    "MMC Hospital: book appointments, track live queue tokens, manage inpatient vitals, EHR prescriptions, and emergency response.",
 };
 
 export const viewport: Viewport = {

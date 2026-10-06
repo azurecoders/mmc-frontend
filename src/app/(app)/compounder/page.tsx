@@ -33,6 +33,7 @@ import {
 } from "@/components/ui";
 import { Appointment, DoctorProfile } from "@/types";
 import { formatDate } from "@/lib/utils";
+import { EmergencyTriggerButton } from "@/components/emergency/EmergencyTriggerButton";
 
 export default function ReceptionQueuePage() {
   const { user } = useAuth();
@@ -149,6 +150,7 @@ export default function ReceptionQueuePage() {
             <LinkButton href="/compounder/approvals" variant="secondary">
               Review Approvals ({pendingApprovalsCount})
             </LinkButton>
+            <EmergencyTriggerButton ward="OPD & Triage Reception Area" />
           </div>
         }
       />

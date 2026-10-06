@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="flex flex-1 items-center justify-center py-10">
           <div className="w-full max-w-md">{children}</div>
         </div>
-        <p className="text-center text-sm text-slate-400">© {new Date().getFullYear()} ApexCare Hospital</p>
+        <p className="text-center text-sm text-slate-400">© {new Date().getFullYear()} MMC Hospital</p>
       </main>
 
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-brand-700 p-12 text-white lg:flex" aria-hidden>
@@ -37,7 +37,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <blockquote className="text-base leading-relaxed text-brand-50">
             &ldquo;I knew exactly when to walk in. No crowded waiting room, no guessing.&rdquo;
           </blockquote>
-          <figcaption className="mt-3 text-sm text-brand-200">— A patient at ApexCare</figcaption>
+          <figcaption className="mt-3 text-sm text-brand-200">— A patient at MMC Hospital</figcaption>
         </figure>
       </aside>
     </div>

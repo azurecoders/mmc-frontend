@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Waiting Lounge Screen · ApexCare",
+  title: "Waiting Lounge Screen · MMC Hospital",
   description: "High-contrast public lounge display for token numbers and doctor cabins.",
 };
 

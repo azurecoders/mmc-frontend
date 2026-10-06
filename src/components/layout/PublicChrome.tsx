@@ -123,7 +123,7 @@ export function PublicFooter() {
         </nav>
       </div>
       <div className="border-t border-slate-100 py-4 text-center text-sm text-slate-400">
-        © {new Date().getFullYear()} ApexCare Hospital
+        © {new Date().getFullYear()} MMC Hospital
       </div>
     </footer>
   );

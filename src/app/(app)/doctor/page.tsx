@@ -55,6 +55,7 @@ import {
   useToast,
   LabReportSimplifierModal,
 } from "@/components/ui";
+import { EmergencyTriggerButton } from "@/components/emergency/EmergencyTriggerButton";
 import {
   DoctorProfile,
   QueueEntry,
@@ -1207,6 +1208,7 @@ export default function DoctorCabinPage() {
             >
               Call Next Patient
             </Button>
+            <EmergencyTriggerButton ward="Cardiology Inpatient Ward" />
           </div>
         }
       />
