@@ -11,6 +11,8 @@ import {
   TestTubes,
   FileCheck,
   Plus,
+  Sparkles,
+  Trash2,
 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { useSocketEvent } from "@/lib/hooks";
@@ -31,10 +33,10 @@ import {
   Tabs,
   LoadingState,
   useToast,
+  LabReportSimplifierModal,
 } from "@/components/ui";
-import { LabOrder } from "@/types";
+import { LabOrder, LabReportSimplificationResponse } from "@/types";
 import { formatDate, formatDateTime } from "@/lib/utils";
-import { Trash2 } from "lucide-react";
 
 interface LabParameterRow {
   parameter: string;
@@ -111,6 +113,80 @@ export default function LabOrdersPage() {
   const [isAbnormal, setIsAbnormal] = useState(false);
   const [criticalAlert, setCriticalAlert] = useState("");
   const [submittingResult, setSubmittingResult] = useState(false);
+
+  // AI Diagnostic Simplifier state
+  const [loadingAiOrderId, setLoadingAiOrderId] = useState<string | null>(null);
+  const [previewingAi, setPreviewingAi] = useState(false);
+  const [activeAiReport, setActiveAiReport] = useState<LabReportSimplificationResponse | null>(null);
+  const [isAiReportModalOpen, setIsAiReportModalOpen] = useState(false);
+
+  const handleViewAiSimplification = async (orderId: string) => {
+    setLoadingAiOrderId(orderId);
+    try {
+      const data = await apiFetch<LabReportSimplificationResponse>(
+        `/lab/orders/${orderId}/simplify-report`,
+        { method: "POST" }
+      );
+      setActiveAiReport(data);
+      setIsAiReportModalOpen(true);
+    } catch (err: any) {
+      toast({
+        tone: "error",
+        title: "Could not generate AI diagnostic report",
+        description: err?.message || "Please try again.",
+      });
+    } finally {
+      setLoadingAiOrderId(null);
+    }
+  };
+
+  const handlePreviewAiInterpretation = async () => {
+    if (!activeOrder) return;
+    const filledParams = parameters.filter((p) => p.parameter.trim() && p.value.trim());
+    if (filledParams.length === 0) {
+      toast({
+        tone: "error",
+        title: "No parameters entered",
+        description: "Please enter at least one test parameter and value to run AI interpretation.",
+      });
+      return;
+    }
+    setPreviewingAi(true);
+    try {
+      const summaryText = filledParams
+        .map((p) => `${p.parameter}: ${p.value} ${p.unit} (${p.flag}${p.reference_range ? `, Ref: ${p.reference_range}` : ""})`)
+        .join("; ") + (clinicalNotes ? ` | Note: ${clinicalNotes}` : "");
+
+      const data = await apiFetch<LabReportSimplificationResponse>("/lab/simplify-findings", {
+        method: "POST",
+        body: JSON.stringify({
+          test_name: activeOrder.test?.name,
+          test_category: activeOrder.test?.category,
+          result_summary: summaryText,
+          findings_json: {
+            parameters: filledParams,
+            clinical_notes: clinicalNotes || undefined,
+          },
+        }),
+      });
+      setActiveAiReport(data);
+      setIsAiReportModalOpen(true);
+      if (data.is_abnormal && !isAbnormal) {
+        setIsAbnormal(true);
+      }
+      if (data.critical_flags && data.critical_flags.length > 0 && !criticalAlert) {
+        setCriticalAlert(data.critical_flags.join("; "));
+      }
+    } catch (err: any) {
+      toast({
+        tone: "error",
+        title: "AI interpretation preview failed",
+        description: err?.message || "Please check inputs.",
+      });
+    } finally {
+      setPreviewingAi(false);
+    }
+  };
 
   const fetchOrders = async () => {
     try {
@@ -328,11 +404,23 @@ export default function LabOrdersPage() {
 
                   {order.result && (
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2 mt-2">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
                         <span className="font-bold text-slate-900">Completed Diagnostic Report</span>
-                        <Badge tone={order.result.is_abnormal ? "danger" : "success"}>
-                          {order.result.is_abnormal ? "Abnormal Flag" : "Normal"}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="h-7 text-xs px-2.5 gap-1 text-brand-700 bg-brand-50 hover:bg-brand-100 border-brand-200 font-medium"
+                            loading={loadingAiOrderId === order.id}
+                            onClick={() => handleViewAiSimplification(order.id)}
+                            icon={<Sparkles className="h-3 w-3 text-brand-600" />}
+                          >
+                            AI Diagnostic Summary
+                          </Button>
+                          <Badge tone={order.result.is_abnormal ? "danger" : "success"}>
+                            {order.result.is_abnormal ? "Abnormal Flag" : "Normal"}
+                          </Badge>
+                        </div>
                       </div>
 
                       {order.result.findings_json?.parameters && Array.isArray(order.result.findings_json.parameters) ? (
@@ -495,16 +583,29 @@ export default function LabOrdersPage() {
             </table>
           </div>
 
-          <div className="flex justify-between items-center pt-1">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              icon={<Plus className="h-3.5 w-3.5" />}
-              onClick={addParameter}
-            >
-              Add Parameter Row
-            </Button>
+          <div className="flex flex-wrap justify-between items-center gap-2 pt-1">
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                icon={<Plus className="h-3.5 w-3.5" />}
+                onClick={addParameter}
+              >
+                Add Parameter Row
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="text-brand-700 bg-brand-50 hover:bg-brand-100 border-brand-200"
+                icon={<Sparkles className="h-3.5 w-3.5 text-brand-600" />}
+                loading={previewingAi}
+                onClick={handlePreviewAiInterpretation}
+              >
+                AI Auto-Interpret Findings
+              </Button>
+            </div>
             <span className="text-[11px] text-slate-500 font-medium">
               {parameters.filter((p) => p.flag !== "NORMAL").length > 0
                 ? "⚠️ Abnormal parameters detected"
@@ -547,6 +648,14 @@ export default function LabOrdersPage() {
           </div>
         </form>
       </Dialog>
+
+      {/* AI Diagnostic Lab Report Simplifier Dialog */}
+      <LabReportSimplifierModal
+        open={isAiReportModalOpen}
+        onClose={() => setIsAiReportModalOpen(false)}
+        data={activeAiReport}
+        defaultPerspective="clinician"
+      />
     </div>
   );
 }

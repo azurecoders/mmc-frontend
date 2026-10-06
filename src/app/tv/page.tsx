@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Activity,
   Volume2,
@@ -18,6 +19,7 @@ import { hospitalAudio } from "@/lib/audio";
 import { WaitingRoomTVDisplay } from "@/types";
 
 export default function WaitingRoomTVPage() {
+  const router = useRouter();
   const [tvData, setTvData] = useState<WaitingRoomTVDisplay | null>(null);
   const [currentTime, setCurrentTime] = useState("");
   const [currentDate, setCurrentDate] = useState("");
@@ -95,13 +97,21 @@ export default function WaitingRoomTVPage() {
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
           <div className="flex items-center gap-4">
-            <Link
-              href="/"
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition"
-              title="Return to App"
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined" && window.history.length > 1) {
+                  router.back();
+                } else {
+                  router.push("/");
+                }
+              }}
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition cursor-pointer"
+              title="Go Back"
+              aria-label="Go Back"
             >
               <ArrowLeft className="h-5 w-5" />
-            </Link>
+            </button>
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
                 ApexCare Hospital & Medical Center

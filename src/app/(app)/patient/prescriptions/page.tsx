@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Pill,
   Stethoscope,
@@ -27,8 +28,13 @@ import {
   LoadingState,
   Dialog,
   useToast,
+  LabReportSimplifierModal,
 } from "@/components/ui";
-import { Consultation, PrescriptionExplanationResponse } from "@/types";
+import {
+  Consultation,
+  PrescriptionExplanationResponse,
+  LabReportSimplificationResponse,
+} from "@/types";
 import { formatDate } from "@/lib/utils";
 
 export default function PatientPrescriptionsPage() {
@@ -42,6 +48,33 @@ export default function PatientPrescriptionsPage() {
   const [explainingId, setExplainingId] = useState<string | null>(null);
   const [activeExplanation, setActiveExplanation] = useState<PrescriptionExplanationResponse | null>(null);
   const [isExplanationOpen, setIsExplanationOpen] = useState(false);
+
+  // AI Lab Report Simplifier state
+  const [simplifyingLabOrderId, setSimplifyingLabOrderId] = useState<string | null>(null);
+  const [activeLabAiReport, setActiveLabAiReport] = useState<LabReportSimplificationResponse | null>(null);
+  const [isLabAiModalOpen, setIsLabAiModalOpen] = useState(false);
+
+  const handleExplainLabReport = async (orderId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setSimplifyingLabOrderId(orderId);
+    try {
+      const data = await apiFetch<LabReportSimplificationResponse>(
+        `/lab/orders/${orderId}/simplify-report`,
+        { method: "POST" }
+      );
+      setActiveLabAiReport(data);
+      setIsLabAiModalOpen(true);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unable to generate AI explanation at this time.";
+      toast({
+        tone: "error",
+        title: "Could not generate AI lab report explanation",
+        description: message,
+      });
+    } finally {
+      setSimplifyingLabOrderId(null);
+    }
+  };
 
   useEffect(() => {
     async function loadHistory() {
@@ -144,7 +177,15 @@ export default function PatientPrescriptionsPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 self-end sm:self-center">
+                  <div className="flex items-center gap-2 flex-wrap self-end sm:self-center">
+                    <Link
+                      href={`/patient/lifestyle?consultationId=${c.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition shadow-2xs"
+                    >
+                      <Apple className="h-3.5 w-3.5 text-emerald-600" />
+                      <span>7-Day Diet Plan</span>
+                    </Link>
                     {hasMedications && (
                       <Button
                         size="sm"
@@ -169,6 +210,30 @@ export default function PatientPrescriptionsPage() {
                 {/* Expanded Details */}
                 {isExpanded && (
                   <div className="border-t border-slate-100 p-5 bg-slate-50/40 space-y-6">
+                    {/* Diet & Lifestyle Action Banner */}
+                    <div className="rounded-xl border border-emerald-200 bg-linear-to-r from-emerald-50/70 via-teal-50/50 to-white p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white shadow-2xs shrink-0">
+                          <Apple className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <span className="text-xs font-bold text-emerald-950 block">
+                            Personalized 7-Day Diet & Lifestyle Plan for {c.diagnosis}
+                          </span>
+                          <span className="text-[11px] text-emerald-800 block">
+                            Customized meal menus, foods to avoid with healthy substitutes, and hydration targets tailored to this visit.
+                          </span>
+                        </div>
+                      </div>
+                      <Link
+                        href={`/patient/lifestyle?consultationId=${c.id}`}
+                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition shadow-xs shrink-0"
+                      >
+                        <Sparkles className="h-3.5 w-3.5" />
+                        <span>View 7-Day Plan</span>
+                      </Link>
+                    </div>
+
                     {/* Clinical Notes & Instructions */}
                     <div className="grid gap-4 sm:grid-cols-2">
                       {c.clinical_notes && (
@@ -278,9 +343,21 @@ export default function PatientPrescriptionsPage() {
                                 </p>
                               )}
                               {ord.result && (
-                                <div className="rounded-lg bg-slate-50 p-3 border border-slate-100 text-xs mt-2 space-y-1">
-                                  <span className="font-semibold text-slate-700">Lab Findings:</span>
-                                  <p className="text-slate-600">{ord.result.result_summary}</p>
+                                <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100 text-xs mt-2 space-y-2">
+                                  <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <span className="font-semibold text-slate-800">Lab Findings:</span>
+                                    <Button
+                                      variant="secondary"
+                                      size="sm"
+                                      className="h-6 text-[11px] px-2 gap-1 text-brand-700 bg-brand-50 hover:bg-brand-100 border-brand-200 font-medium"
+                                      loading={simplifyingLabOrderId === ord.id}
+                                      onClick={(e) => handleExplainLabReport(ord.id, e)}
+                                      icon={<Sparkles className="h-2.5 w-2.5 text-brand-600" />}
+                                    >
+                                      ✨ Explain with AI
+                                    </Button>
+                                  </div>
+                                  <p className="text-slate-600 leading-relaxed">{ord.result.result_summary}</p>
                                   {ord.result.is_abnormal && (
                                     <Badge tone="danger" className="mt-1">
                                       Abnormal Result: {ord.result.critical_alert || "Attention needed"}
@@ -442,6 +519,14 @@ export default function PatientPrescriptionsPage() {
           </div>
         )}
       </Dialog>
+
+      {/* AI Diagnostic Lab Report Simplifier Dialog */}
+      <LabReportSimplifierModal
+        open={isLabAiModalOpen}
+        onClose={() => setIsLabAiModalOpen(false)}
+        data={activeLabAiReport}
+        defaultPerspective="patient"
+      />
     </div>
   );
 }

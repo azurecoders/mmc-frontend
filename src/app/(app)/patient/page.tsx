@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Stethoscope,
   HeartPulse,
+  Apple,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { apiFetch } from "@/lib/api";
@@ -257,6 +258,21 @@ export default function PatientOverviewPage() {
             Medical history archive, chronic allergies, and medications.
           </p>
         </Link>
+
+        <Link
+          href="/patient/lifestyle"
+          className="group rounded-xl border border-slate-200 bg-white p-5 hover:border-emerald-500 hover:shadow-xs transition"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition">
+            <Apple className="h-5 w-5" />
+          </div>
+          <h3 className="mt-3 text-sm font-semibold text-slate-900 group-hover:text-emerald-600 transition">
+            Diet & Lifestyle
+          </h3>
+          <p className="mt-1 text-xs text-slate-500">
+            Personalized 7-day meal guide, foods to avoid, and hydration.
+          </p>
+        </Link>
       </div>
 
       {/* Recent Prescriptions & Consultations */}
@@ -298,9 +314,19 @@ export default function PatientOverviewPage() {
                       <span>{c.lab_orders?.length || 0} lab tests ordered</span>
                     </div>
                   </div>
-                  <LinkButton href="/patient/prescriptions" variant="secondary" size="sm">
-                    View Details
-                  </LinkButton>
+                  <div className="flex items-center gap-2">
+                    <LinkButton
+                      href={`/patient/lifestyle?consultationId=${c.id}`}
+                      variant="secondary"
+                      size="sm"
+                      className="text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border-emerald-200"
+                    >
+                      Diet Plan
+                    </LinkButton>
+                    <LinkButton href="/patient/prescriptions" variant="ghost" size="sm">
+                      Details
+                    </LinkButton>
+                  </div>
                 </div>
               ))}
             </div>

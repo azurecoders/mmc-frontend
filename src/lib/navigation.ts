@@ -18,6 +18,7 @@ import {
   Users,
   KeyRound,
   Tv,
+  Apple,
   type LucideIcon,
 } from "lucide-react";
 import type { RoleCode, User } from "@/types";
@@ -56,6 +57,7 @@ export const WORKSPACES: Record<RoleCode, Workspace> = {
       { href: "/patient/vitals", label: "Health check", icon: Activity },
       { href: "/patient/records", label: "Health record", icon: FileText },
       { href: "/patient/prescriptions", label: "Visits & prescriptions", icon: Pill },
+      { href: "/patient/lifestyle", label: "Diet & lifestyle", icon: Apple },
     ],
   },
   DOCTOR: {
@@ -119,7 +121,7 @@ export const WORKSPACES: Record<RoleCode, Workspace> = {
 
 /** Links shown at the bottom of every sidebar. */
 export const SHARED_NAV: NavItem[] = [
-  { href: "/tv", label: "Waiting room screen", icon: Tv },
+  // { href: "/tv", label: "Waiting room screen", icon: Tv },
   { href: "/guide", label: "Help & guide", icon: BookOpen },
 ];
 

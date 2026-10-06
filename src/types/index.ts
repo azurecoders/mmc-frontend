@@ -341,3 +341,182 @@ export interface PrescriptionExplanationResponse {
   general_advice: string;
   created_at: string;
 }
+
+// --- AI Clinical Workbench Types ---
+export interface DrugSafetyCheckItem {
+  interaction_type: "DRUG_DRUG" | "DRUG_ALLERGY" | "DRUG_DISEASE" | string;
+  severity: "HIGH" | "MEDIUM" | "LOW" | string;
+  primary_item: string;
+  interacting_with: string;
+  clinical_effect: string;
+  clinical_recommendation: string;
+}
+
+export interface DrugSafetyCheckRequest {
+  medicines: string[];
+  allergies?: string[];
+  chronic_conditions?: string[];
+  patient_age?: number;
+  patient_gender?: string;
+}
+
+export interface DrugSafetyCheckResponse {
+  overall_safety: "SAFE" | "MODERATE_WARNING" | "CRITICAL_CONTRAINDICATION" | string;
+  safety_score: number;
+  summary: string;
+  warnings_count: number;
+  interactions: DrugSafetyCheckItem[];
+  safer_alternatives: string[];
+  ai_model_used: string;
+  is_live_ai: boolean;
+}
+
+export interface DifferentialDiagnosisItem {
+  diagnosis: string;
+  likelihood: "HIGH" | "MODERATE" | "LOW" | string;
+  clinical_rationale: string;
+  recommended_tests: string[];
+}
+
+export interface SuggestedLabOrderItem {
+  test_name: string;
+  test_id?: string;
+  urgency: "ROUTINE" | "URGENT" | "STAT" | string;
+  clinical_justification: string;
+}
+
+export interface ClinicalCopilotRequest {
+  chief_complaint: string;
+  symptoms?: string;
+  vitals_bp?: string;
+  vitals_heart_rate?: number;
+  vitals_spo2?: number;
+  vitals_temperature?: number;
+  chronic_conditions?: string[];
+  patient_age?: number;
+  patient_gender?: string;
+}
+
+export interface ClinicalCopilotResponse {
+  summary_assessment: string;
+  differential_diagnoses: DifferentialDiagnosisItem[];
+  suggested_lab_orders: SuggestedLabOrderItem[];
+  red_flag_warnings: string[];
+  recommended_physical_exams: string[];
+  ai_model_used: string;
+  is_live_ai: boolean;
+}
+
+export interface ExtractedPrescription {
+  medicine_name: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  instructions: string;
+}
+
+export interface VoiceToSoapRequest {
+  dictation_text: string;
+  chief_complaint?: string;
+  vitals_summary?: string;
+  patient_name?: string;
+}
+
+export interface VoiceToSoapResponse {
+  subjective: string;
+  objective: string;
+  assessment: string;
+  plan: string;
+  structured_soap_notes: string;
+  suggested_diagnosis: string;
+  suggested_special_instructions?: string;
+  extracted_prescriptions: ExtractedPrescription[];
+  suggested_follow_up_days?: number;
+  ai_model_used: string;
+  is_live_ai: boolean;
+}
+
+// --- AI Feature 4: Personalized Diet & Lifestyle Plan Types ---
+export interface DayMealPlanItem {
+  day: string;
+  theme: string;
+  breakfast: string;
+  lunch: string;
+  snack: string;
+  dinner: string;
+  clinical_note?: string;
+}
+
+export interface FoodRestrictionItem {
+  food_to_avoid: string;
+  reason: string;
+  healthy_substitute: string;
+}
+
+export interface GenerateDietPlanRequest {
+  diagnosis?: string;
+  chronic_conditions?: string[];
+  allergies?: string[];
+  dietary_preferences?: string;
+  patient_age?: number;
+  patient_gender?: string;
+}
+
+export interface PersonalizedDietPlanResponse {
+  consultation_id?: string;
+  diagnosis: string;
+  patient_name: string;
+  target_conditions: string[];
+  dietary_framework: string;
+  daily_calorie_target?: string;
+  daily_hydration_liters: number;
+  hydration_guidelines: string;
+  foods_to_avoid: FoodRestrictionItem[];
+  seven_day_meal_plan: DayMealPlanItem[];
+  physical_activity_plan: string[];
+  lifestyle_and_sleep_habits: string[];
+  clinical_precautions: string[];
+  ai_model_used: string;
+  is_live_ai: boolean;
+  generated_at: string;
+}
+
+// --- AI Feature 5: Diagnostic Lab Report Simplifier Types ---
+export interface LabInterpretedParameter {
+  parameter_name: string;
+  measured_value: string;
+  reference_range?: string;
+  status: "NORMAL" | "ELEVATED" | "LOW" | "CRITICALLY_HIGH" | "CRITICALLY_LOW";
+  plain_english_meaning: string;
+  clinical_significance: string;
+}
+
+export interface SimplifyLabReportRequest {
+  test_name?: string;
+  test_category?: string;
+  result_summary?: string;
+  findings_json?: Record<string, any>;
+  patient_age?: number;
+  patient_gender?: string;
+  clinical_diagnosis?: string;
+}
+
+export interface LabReportSimplificationResponse {
+  order_id?: string;
+  test_name: string;
+  test_category: string;
+  patient_name: string;
+  overall_status: "NORMAL" | "ATTENTION_NEEDED" | "CRITICAL_ALERT";
+  is_abnormal: boolean;
+  patient_summary: string;
+  doctor_snapshot: string;
+  critical_flags: string[];
+  interpreted_parameters: LabInterpretedParameter[];
+  questions_for_doctor: string[];
+  recommended_actions: string[];
+  ai_model_used: string;
+  is_live_ai: boolean;
+  generated_at: string;
+}
+
+
